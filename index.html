@@ -46,6 +46,8 @@ label{display:block;margin:10px 0 4px;font-weight:600}
 table{border-collapse:collapse}td,th{border:1px solid var(--line);padding:6px 12px;text-align:left}
 .big{font:700 54px/1 Consolas,monospace;text-align:center;margin:20px 0}
 small,.mute{color:var(--mute)}
+@media(max-width:640px){#bar{padding:6px 10px}#bar .in{gap:6px}#timer{font-size:22px;min-width:84px;padding:4px 8px}.chip{font-size:12px;padding:2px 8px}#bar .mute,#tname{display:none}#submitBtn{padding:7px 10px;font-size:15px}.calc{position:static}h1{font-size:22px}.card{padding:16px}}
+.note{border-color:#e0b25c;background:#fff8e8}
 </style>
 </head>
 <body>
@@ -129,6 +131,8 @@ function consent(){
   <p><b>Risks:</b> minimal. Some sets are deliberately time-pressured, which can feel stressful. You get a two-minute break between sets and you may stop at any time without penalty or explanation.</p>
   <p><b>Privacy:</b> your answers are stored under a code number, not your name. You do not type anything into an AI tool. You may ask for your data to be withdrawn until the dataset is de-identified at the end of data collection.</p>
   <p><b>Your performance has no effect on any course grade.</b> Scores are shown to you only at the end.</p>
+  ${CFG.online ? '<p>Please do this alone, in one sitting, somewhere quiet. Do not refresh or close the page: your progress would be lost.</p>' : ''}
+  ${CFG.online && window.innerWidth < 860 ? '<div class="card note"><b>Small screen detected.</b> This study works best on a laptop: on a phone the calculator sits below the questions. If you can, please switch to a laptop before you start.</div>' : ''}
   <p><label style="font-weight:400"><input type="checkbox" id="c1"> I am 18 or older, I can read English, and I am not a member of the research team.</label>
      <label style="font-weight:400"><input type="checkbox" id="c2"> I have read the information above and I agree to take part.</label></p>
   <div class="err" id="e"></div><button id="go">I agree – continue</button> <button class="sec" id="no">I do not wish to take part</button></div>`);
