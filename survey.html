@@ -1,0 +1,66 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>AI and workload – 2-minute survey</title>
+<style>
+:root{--ink:#16202b;--mute:#55606c;--line:#d5dbe2;--bg:#f4f6f8;--brand:#1f4e79;--bad:#b3261e}
+*{box-sizing:border-box}
+body{margin:0;font:17px/1.5 "Segoe UI",system-ui,Arial,sans-serif;color:var(--ink);background:var(--bg)}
+main{max-width:760px;margin:0 auto;padding:20px 16px 60px}
+h1{font-size:25px;margin:.2em 0 .4em}
+.card{background:#fff;border:1px solid var(--line);border-radius:10px;padding:18px 20px;margin:14px 0}
+.q{font-weight:600;margin-bottom:10px}
+.scale{display:grid;grid-template-columns:repeat(5,1fr);gap:6px}
+.scale label{display:flex;flex-direction:column;align-items:center;gap:4px;padding:10px 2px;border:1px solid var(--line);border-radius:8px;cursor:pointer;font-size:14px;text-align:center}
+.scale input{width:20px;height:20px}
+.scale label:has(input:checked){border-color:var(--brand);background:#eef4fb}
+.ends{display:flex;justify-content:space-between;color:var(--mute);font-size:14px;margin-top:4px}
+select,textarea{font:inherit;padding:8px 10px;border:1px solid #8b96a3;border-radius:6px;background:#fff;width:100%}
+button{font:inherit;padding:11px 20px;border-radius:8px;border:1px solid var(--brand);background:var(--brand);color:#fff;cursor:pointer}
+button:disabled{opacity:.5}
+:focus-visible{outline:3px solid #f0a500;outline-offset:2px}
+.err{color:var(--bad);font-weight:600;min-height:1.4em;margin:8px 0}
+.mute{color:var(--mute)}
+</style>
+</head>
+<body>
+<main id="app"></main>
+<script>
+const CFG = {"sink": {"action": "", "entry": ""}};
+const Q = [
+ ['q1_time_saved','AI tools have reduced the time I need for routine tasks.'],
+ ['q2_more_output','The amount of work expected of me (or that I expect of others) has increased since AI tools became common.'],
+ ['q3_tighter_deadlines','Deadlines have become tighter since AI tools became common.'],
+ ['q4_harder_tasks','Tasks have become more difficult or complex since AI tools became common.'],
+ ['q5_more_reliance','People around me rely on AI more than they did a year ago.'],
+ ['q6_checking','I (or the people I supervise) check AI output carefully before using it.']];
+const app = document.getElementById('app'), $ = s => document.querySelector(s);
+app.innerHTML = `<h1>AI and workload: a 2-minute survey</h1>
+<div class="card"><p>This short survey is part of a student project in INDE 421 (Human Factors Engineering) at the American University of Beirut. It asks how AI tools have changed work and study.</p>
+<p class="mute">It is anonymous: no name or email is collected. Taking part is voluntary and you can close the page at any time. Please answer only if you are 18 or older.</p></div>
+<div class="card"><div class="q"><label for="role">Which describes you best?</label></div>
+<select id="role"><option value="">– select –</option><option>Student</option><option>Professor</option><option>Employee</option><option>Employer</option></select></div>
+${Q.map(([id,t],i)=>`<div class="card"><div class="q" id="l_${id}">${i+1}. ${t}</div>
+ <div class="scale" role="radiogroup" aria-labelledby="l_${id}">${[1,2,3,4,5].map(v=>`<label><input type="radio" name="${id}" value="${v}">${v}</label>`).join('')}</div>
+ <div class="ends"><span>Strongly disagree</span><span>Strongly agree</span></div></div>`).join('')}
+<div class="card"><div class="q"><label for="cm">Anything to add? (optional)</label></div>
+<textarea id="cm" rows="3" maxlength="600" placeholder="For example, a task where AI made your work easier or harder. Please do not write names."></textarea></div>
+<div class="err" id="e" role="alert"></div><button id="go">Send my answers</button>`;
+$('#go').onclick = () => {
+  const r = {kind:'survey', role:$('#role').value, time:new Date().toISOString(), comment:$('#cm').value.trim()};
+  const miss = [];
+  Q.forEach(([id],i) => { const c = document.querySelector(`input[name="${id}"]:checked`); c ? r[id] = +c.value : miss.push(i+1); });
+  if (!r.role) return $('#e').textContent = 'Please choose which describes you best.';
+  if (miss.length) return $('#e').textContent = 'Please answer statement' + (miss.length>1?'s ':' ') + miss.join(', ') + '.';
+  if (!CFG.sink || !CFG.sink.action) return $('#e').textContent = 'This survey is not connected yet. Please tell the research team.';
+  $('#go').disabled = true; $('#e').textContent = '';
+  const body = new URLSearchParams(); body.append(CFG.sink.entry, JSON.stringify(r));
+  fetch(CFG.sink.action, {method:'POST', mode:'no-cors', body})
+    .then(() => { app.innerHTML = '<h1>Thank you!</h1><div class="card">Your answers were sent. You can close this page.</div>'; })
+    .catch(() => { $('#go').disabled = false; $('#e').textContent = 'Could not send. Check your connection and press the button again.'; });
+};
+</script>
+</body>
+</html>

@@ -1,0 +1,322 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>INDE 421 Group E – Problem-Solving Study</title>
+<style>
+:root{--ink:#16202b;--mute:#55606c;--line:#d5dbe2;--bg:#f4f6f8;--card:#fff;--brand:#1f4e79;--ok:#1e7a46;--warn:#b26a00;--bad:#b3261e;--aibg:#eef4fb}
+*{box-sizing:border-box}
+body{margin:0;font:17px/1.5 "Segoe UI",system-ui,Arial,sans-serif;color:var(--ink);background:var(--bg)}
+main{max-width:1080px;margin:0 auto;padding:20px 16px 80px}
+h1{font-size:26px;margin:.2em 0 .5em}h2{font-size:20px;margin:1.2em 0 .4em}
+.card{background:var(--card);border:1px solid var(--line);border-radius:10px;padding:20px 22px;margin:14px 0}
+button{font:inherit;padding:10px 18px;border-radius:8px;border:1px solid var(--brand);background:var(--brand);color:#fff;cursor:pointer}
+button.sec{background:#fff;color:var(--brand)}
+button:disabled{opacity:.45;cursor:not-allowed}
+button:focus-visible,input:focus-visible,select:focus-visible{outline:3px solid #f0a500;outline-offset:2px}
+input[type=text],input[type=number],select{font:inherit;padding:8px 10px;border:1px solid #8b96a3;border-radius:6px;background:#fff}
+label{display:block;margin:10px 0 4px;font-weight:600}
+.row{display:flex;gap:16px;flex-wrap:wrap;align-items:flex-end}
+.err{color:var(--bad);font-weight:600;min-height:1.4em;margin-top:8px}
+.chip{display:inline-block;padding:3px 12px;border-radius:99px;font-weight:700;font-size:15px;border:1px solid var(--line);background:#fff}
+.chip.on{background:var(--aibg);border-color:#9bbbe0;color:var(--brand)}
+#bar{position:sticky;top:0;z-index:5;background:#fff;border-bottom:2px solid var(--line);padding:10px 16px;display:none}
+#bar .in{max-width:1080px;margin:0 auto;display:flex;gap:14px;align-items:center;flex-wrap:wrap}
+#timer{font:700 30px/1 Consolas,monospace;padding:6px 14px;border-radius:8px;background:#eef1f4;min-width:118px;text-align:center}
+#timer.warn{background:#fff1d6;color:var(--warn)}#timer.bad{background:#fde3e1;color:var(--bad)}
+.grow{flex:1}
+.work{display:grid;grid-template-columns:1fr 250px;gap:18px;align-items:start}
+@media(max-width:860px){.work{grid-template-columns:1fr}}
+.q{border:1px solid var(--line);border-radius:10px;background:#fff;padding:14px 16px;margin:0 0 12px}
+.q .n{font-weight:700;color:var(--brand)}
+.q .ans{display:flex;gap:10px;align-items:center;margin-top:10px;flex-wrap:wrap}
+.q .ans input{width:150px}
+.hint{margin-top:10px;padding:10px 12px;border-left:4px solid #5b8fc7;background:var(--aibg);border-radius:4px}
+.hint b{color:var(--brand)}
+.calc{position:sticky;top:78px;background:#fff;border:1px solid var(--line);border-radius:10px;padding:12px}
+.calc output{display:block;font:600 22px Consolas,monospace;text-align:right;padding:8px;border:1px solid var(--line);border-radius:6px;background:#f7f9fb;min-height:44px;overflow:hidden}
+.calc .k{display:grid;grid-template-columns:repeat(4,1fr);gap:6px;margin-top:8px}
+.calc button{padding:10px 0;background:#fff;color:var(--ink);border-color:#aab3bd}
+.calc button.op{background:#e9eef4}.calc button.eq{background:var(--brand);color:#fff}
+.tlx{margin:18px 0;padding-bottom:14px;border-bottom:1px solid var(--line)}
+.tlx input[type=range]{width:100%;height:28px}
+.tlx .ends{display:flex;justify-content:space-between;color:var(--mute);font-size:15px}
+.tlx .val{font-weight:700}.tlx.todo .val{color:var(--bad)}
+table{border-collapse:collapse}td,th{border:1px solid var(--line);padding:6px 12px;text-align:left}
+.big{font:700 54px/1 Consolas,monospace;text-align:center;margin:20px 0}
+small,.mute{color:var(--mute)}
+</style>
+</head>
+<body>
+<div id="bar"><div class="in">
+  <span id="tname" class="chip"></span><span id="aichip" class="chip"></span>
+  <span id="prog" class="chip"></span><span class="grow"></span>
+  <span class="mute">Time left</span><span id="timer" role="timer" aria-live="off">0:00</span>
+  <button id="submitBtn">Submit answers</button>
+</div></div>
+<main id="app"></main>
+<script>
+const M = {"hint_tool": {"tool": "Anthropic Claude", "model": "Claude Fable 5.2 (claude-fable-5-2)", "interface": "Claude Code desktop session, default settings", "generated_on": "2026-11-26", "prompt": "Give one brief conceptual hint for this problem. Do not substitute numbers, perform calculations or reveal the answer."}, "categories": {"1": "Successive percentages (discount then tax)", "2": "Average speed over two legs", "3": "Combined work rate", "4": "Weighted average / mixture", "5": "Proportion and unit rate", "6": "Simple interest (solve for time)"}, "practice": {"id": "P0", "text": "An item costing $120 is discounted by 15%, then taxed at 10% of the discounted price. What is the final price? (Round to 2 decimals.)", "unit": "$", "decimals": 2, "answer": 112.2, "hint": "Apply the two percentage changes one after the other: the second one acts on the price you get after the first, not on the original price."}, "problems": [{"set": 1, "item": 1, "category": 1, "id": "S1Q1", "text": "A jacket is priced at $80. It is discounted by 25%, and then 11% VAT is added to the discounted price. What is the final price? (Round to 2 decimals.)", "unit": "$", "decimals": 2, "answer": 66.6, "category_name": "Successive percentages (discount then tax)", "hint": "The VAT is charged on the price after the discount, so work in two stages: first find the reduced price, then increase that result."}, {"set": 1, "item": 2, "category": 2, "id": "S1Q2", "text": "A driver covers 60 km at 40 km/h and then 90 km at 60 km/h. What is the average speed for the whole trip, in km/h?", "unit": "km/h", "decimals": 0, "answer": 50.0, "category_name": "Average speed over two legs", "hint": "Average speed is total distance divided by total time. Find how long each leg takes before combining them; do not average the two speeds."}, {"set": 1, "item": 3, "category": 3, "id": "S1Q3", "text": "Printer A finishes a print job in 6 minutes. Printer B finishes the same job in 12 minutes. Working together, how many minutes do they need?", "unit": "min", "decimals": 0, "answer": 4.0, "category_name": "Combined work rate", "hint": "Think in terms of how much of the job each printer completes per minute, add those rates, then turn the combined rate back into a time."}, {"set": 1, "item": 4, "category": 4, "id": "S1Q4", "text": "In a course, the midterm counts for 40% of the grade and the final for 60%. A student scores 70 on the midterm and 85 on the final. What is the course grade?", "unit": "points", "decimals": 0, "answer": 79.0, "category_name": "Weighted average / mixture", "hint": "Each score contributes in proportion to its weight. Multiply each score by its share of the grade and add the contributions."}, {"set": 1, "item": 5, "category": 5, "id": "S1Q5", "text": "250 g of flour makes 8 cookies. Flour costs $2.40 per kg. What is the cost of the flour needed for 40 cookies? (Round to 2 decimals.)", "unit": "$", "decimals": 2, "answer": 3.0, "category_name": "Proportion and unit rate", "hint": "First scale the flour quantity up to the number of cookies required, then convert the units so they match the price before costing it."}, {"set": 1, "item": 6, "category": 6, "id": "S1Q6", "text": "$2,000 is invested at 5% simple interest per year. After how many years will the total amount reach $2,600?", "unit": "years", "decimals": 0, "answer": 6.0, "category_name": "Simple interest (solve for time)", "hint": "With simple interest the same amount of interest is added every year. Find the interest earned in one year and compare it with the total growth needed."}, {"set": 2, "item": 1, "category": 1, "id": "S2Q1", "text": "A laptop bag is priced at $150. It is discounted by 20%, and then 8% tax is added to the discounted price. What is the final price? (Round to 2 decimals.)", "unit": "$", "decimals": 2, "answer": 129.6, "category_name": "Successive percentages (discount then tax)", "hint": "The two percentages are not applied to the same base. Reduce the price first, then apply the tax to the reduced price."}, {"set": 2, "item": 2, "category": 2, "id": "S2Q2", "text": "A bus covers 80 km at 80 km/h and then 60 km at 40 km/h. What is the average speed for the whole trip, in km/h?", "unit": "km/h", "decimals": 0, "answer": 56.0, "category_name": "Average speed over two legs", "hint": "The bus spends different amounts of time at each speed. Work out the time for each part, then divide the whole distance by the whole time."}, {"set": 2, "item": 3, "category": 3, "id": "S2Q3", "text": "Pipe A fills a tank in 10 hours. Pipe B fills the same tank in 15 hours. With both pipes open, how many hours does it take to fill the tank?", "unit": "h", "decimals": 0, "answer": 6.0, "category_name": "Combined work rate", "hint": "Express each pipe as a fraction of the tank filled per hour. The rates add; the times do not."}, {"set": 2, "item": 4, "category": 4, "id": "S2Q4", "text": "A coffee blend mixes 3 kg of beans costing $12 per kg with 2 kg of beans costing $17 per kg. What is the cost of the blend per kg, in dollars?", "unit": "$/kg", "decimals": 0, "answer": 14.0, "category_name": "Weighted average / mixture", "hint": "The price of the blend is the total cost of all the beans divided by the total mass, so the larger quantity pulls the result toward its price."}, {"set": 2, "item": 5, "category": 5, "id": "S2Q5", "text": "A car uses 7.5 litres of fuel per 100 km. Fuel costs $1.20 per litre. What is the fuel cost of a 260 km trip? (Round to 2 decimals.)", "unit": "$", "decimals": 2, "answer": 23.4, "category_name": "Proportion and unit rate", "hint": "Use the consumption rate to find how many litres the trip needs, then price those litres."}, {"set": 2, "item": 6, "category": 6, "id": "S2Q6", "text": "$1,500 is invested at 4% simple interest per year. After how many years will the total amount reach $1,800?", "unit": "years", "decimals": 0, "answer": 5.0, "category_name": "Simple interest (solve for time)", "hint": "Find the yearly interest on the original amount, which stays constant, then ask how many of those yearly amounts make up the required increase."}, {"set": 3, "item": 1, "category": 1, "id": "S3Q1", "text": "Headphones are priced at $90. They are discounted by 30%, and then 10% tax is added to the discounted price. What is the final price? (Round to 2 decimals.)", "unit": "$", "decimals": 2, "answer": 69.3, "category_name": "Successive percentages (discount then tax)", "hint": "Treat it as a chain: the discount changes the price, and the tax is then calculated on that new price."}, {"set": 3, "item": 2, "category": 2, "id": "S3Q2", "text": "A cyclist-support van covers 45 km at 90 km/h and then 75 km at 50 km/h. What is the average speed for the whole trip, in km/h?", "unit": "km/h", "decimals": 0, "answer": 60.0, "category_name": "Average speed over two legs", "hint": "Speeds cannot be averaged directly when the legs take different times. Compute each leg's duration, then use total distance over total time."}, {"set": 3, "item": 3, "category": 3, "id": "S3Q3", "text": "Painter A paints a room in 4 hours. Painter B paints the same room in 12 hours. Working together, how many hours do they need?", "unit": "h", "decimals": 0, "answer": 3.0, "category_name": "Combined work rate", "hint": "Ask what fraction of the room each painter finishes in one hour, combine the two fractions, and invert to get the time for one whole room."}, {"set": 3, "item": 4, "category": 4, "id": "S3Q4", "text": "In a course, quizzes count for 30% of the grade and the project for 70%. A student scores 60 on the quizzes and 90 on the project. What is the course grade?", "unit": "points", "decimals": 0, "answer": 81.0, "category_name": "Weighted average / mixture", "hint": "A weighted average sits closer to the component with the larger weight. Multiply each score by its weight as a fraction and sum."}, {"set": 3, "item": 5, "category": 5, "id": "S3Q5", "text": "A printer prints 45 pages in 2 minutes. Ink costs $0.04 per page. What is the ink cost of a job that takes 14 minutes? (Round to 2 decimals.)", "unit": "$", "decimals": 2, "answer": 12.6, "category_name": "Proportion and unit rate", "hint": "Find the printing rate per minute, use it to get the number of pages in the whole job, then apply the cost per page."}, {"set": 3, "item": 6, "category": 6, "id": "S3Q6", "text": "$3,000 is invested at 4% simple interest per year. After how many years will the total amount reach $3,960?", "unit": "years", "decimals": 0, "answer": 8.0, "category_name": "Simple interest (solve for time)", "hint": "Simple interest grows in equal yearly steps based only on the original amount. Compare the size of one step with the total gain required."}, {"set": 4, "item": 1, "category": 1, "id": "S4Q1", "text": "A textbook is priced at $60. It is discounted by 15%, and then 11% VAT is added to the discounted price. What is the final price? (Round to 2 decimals.)", "unit": "$", "decimals": 2, "answer": 56.61, "category_name": "Successive percentages (discount then tax)", "hint": "Do the discount and the VAT in sequence. The VAT percentage applies to what the customer pays after the discount."}, {"set": 4, "item": 2, "category": 2, "id": "S4Q2", "text": "A truck covers 100 km at 50 km/h and then 60 km at 120 km/h. What is the average speed for the whole trip, in km/h?", "unit": "km/h", "decimals": 0, "answer": 64.0, "category_name": "Average speed over two legs", "hint": "The truck does not spend equal time at each speed. Find the hours for each leg and divide the full distance by the full time."}, {"set": 4, "item": 3, "category": 3, "id": "S4Q3", "text": "Machine A packs an order in 20 minutes. Machine B packs the same order in 30 minutes. Working together, how many minutes do they need?", "unit": "min", "decimals": 0, "answer": 12.0, "category_name": "Combined work rate", "hint": "Convert each machine's time into the share of the order it packs per minute, add the shares, then convert back into minutes for one order."}, {"set": 4, "item": 4, "category": 4, "id": "S4Q4", "text": "4 litres of a 10% salt solution are mixed with 6 litres of a 25% salt solution. What is the salt concentration of the mixture, in percent?", "unit": "%", "decimals": 0, "answer": 19.0, "category_name": "Weighted average / mixture", "hint": "Track the amount of salt, not the percentages: find the salt in each solution, add it, and divide by the total volume."}, {"set": 4, "item": 5, "category": 5, "id": "S4Q5", "text": "A mobile plan costs $18 for 12 GB, and extra data is billed at the same rate per GB. A user consumes 5 GB per week. What does 4 weeks of data cost? (Round to 2 decimals.)", "unit": "$", "decimals": 2, "answer": 30.0, "category_name": "Proportion and unit rate", "hint": "Work out the price of one GB and the total data used over the period, then combine the two."}, {"set": 4, "item": 6, "category": 6, "id": "S4Q6", "text": "$2,500 is invested at 6% simple interest per year. After how many years will the total amount reach $3,100?", "unit": "years", "decimals": 0, "answer": 4.0, "category_name": "Simple interest (solve for time)", "hint": "Interest each year is a fixed fraction of the starting amount. Divide the total increase needed by one year's interest."}], "sequences": {"1": "ABDC", "2": "BCAD", "3": "CDBA", "4": "DACB"}, "conditions": {"A": {"ai": 1, "time": "normal"}, "B": {"ai": 1, "time": "tight"}, "C": {"ai": 0, "time": "normal"}, "D": {"ai": 0, "time": "tight"}}, "limits_s": {"normal": 540, "tight": 360}, "rest_s": 120};
+const ALLOC = {"1": 1, "2": 4, "3": 2, "4": 3, "5": 1, "6": 4, "7": 2, "8": 3, "9": 2, "10": 1, "11": 3, "12": 4, "13": 2, "14": 1, "15": 3, "16": 4, "17": 2, "18": 1, "19": 4, "20": 3, "21": 4, "22": 1, "23": 2, "24": 3, "25": 1, "26": 2, "27": 3, "28": 4, "29": 1, "30": 3, "31": 2, "32": 4, "33": 3, "34": 2, "35": 4, "36": 1, "37": 2, "38": 1, "39": 3, "40": 4, "41": 4, "42": 3, "43": 1, "44": 2, "45": 2, "46": 4, "47": 3, "48": 1};
+const CFG = {"online": true, "sink": {"action": "", "entry": ""}};
+const TEST = new URLSearchParams(location.search).get('test') === '1';
+const LIM = TEST ? {normal:25, tight:15} : M.limits_s;
+const REST = TEST ? 4 : M.rest_s;
+const TLX = [
+ ['mental','Mental demand','How mentally demanding was the task?','Very low','Very high'],
+ ['physical','Physical demand','How physically demanding was the task?','Very low','Very high'],
+ ['temporal','Temporal demand','How hurried or rushed was the pace of the task?','Very low','Very high'],
+ ['performance','Performance','How successful were you in accomplishing what you were asked to do?','Perfect','Failure'],
+ ['effort','Effort','How hard did you have to work to accomplish your level of performance?','Very low','Very high'],
+ ['frustration','Frustration','How insecure, discouraged, irritated, stressed and annoyed were you?','Very low','Very high']];
+const $ = s => document.querySelector(s), app = $('#app'), bar = $('#bar');
+let S = {version:'1.1', mode:CFG.online?'online':'offline', test_mode:TEST, trials:[], hint_tool:M.hint_tool};
+let tick = null;
+const save = () => { try { localStorage.setItem('inde421_' + (S.participant_id||'tmp'), JSON.stringify(S)); } catch(e){} };
+const fmt = s => Math.floor(s/60) + ':' + String(Math.max(0,s)%60).padStart(2,'0');
+const esc = t => String(t).replace(/[&<>"]/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+function show(html){ bar.style.display='none'; app.innerHTML = html; window.scrollTo(0,0); }
+function parseAns(raw){
+  const t = String(raw).replace(/[^0-9.\-]/g,'');
+  if (t === '' || t === '-' || t === '.') return null;
+  const x = parseFloat(t); return Number.isFinite(x) ? x : null;
+}
+window.addEventListener('beforeunload', e => { if (S.participant_id && !S.finished){ e.preventDefault(); e.returnValue=''; } });
+
+/* ---------- online start + central save ---------- */
+function onlineStart(){
+  const n = +(new URLSearchParams(location.search).get('p') || 0);
+  if (n >= 1 && n <= 48 && ALLOC[n]) { S.participant_id = 'P' + String(n).padStart(2,'0'); S.sequence_id = ALLOC[n]; S.assignment = 'allocation list'; }
+  else { S.participant_id = 'W' + Math.random().toString(36).slice(2,8).toUpperCase(); S.sequence_id = 1 + Math.floor(Math.random()*4); S.assignment = 'random'; }
+  S.sequence = M.sequences[String(S.sequence_id)]; S.session_start = new Date().toISOString();
+  S.device = {w: window.innerWidth, h: window.innerHeight, touch: navigator.maxTouchPoints > 0};
+  save(); consent();
+}
+function sendData(obj){
+  if (!CFG.sink || !CFG.sink.action) return Promise.reject(new Error('no sink'));
+  const body = new URLSearchParams(); body.append(CFG.sink.entry, JSON.stringify(obj));
+  return fetch(CFG.sink.action, {method:'POST', mode:'no-cors', body});
+}
+
+/* ---------- 0 researcher setup ---------- */
+function setup(){
+  show(`<h1>Session setup <small>(researcher only)</small></h1>
+  <div class="card"><div class="row">
+   <div><label for="pn">Participant number (1–48)</label><input id="pn" type="number" min="1" max="48" style="width:120px"></div>
+   <div><label for="sq">Sequence</label><select id="sq"><option value="">– enter number –</option>
+     ${Object.entries(M.sequences).map(([k,v])=>`<option value="${k}">${k}: ${v}</option>`).join('')}</select></div>
+   <div><label for="rs">Researcher initials</label><input id="rs" type="text" maxlength="4" style="width:90px"></div>
+  </div>
+  <p class="mute">The sequence is filled in from the block-randomised allocation list. Change it only if the list was revised.</p>
+  ${TEST?'<p class="err">TEST MODE: short timers. Data from this session are flagged test_mode.</p>':''}
+  <div class="err" id="e"></div><button id="go">Hand over to participant</button></div>`);
+  $('#pn').oninput = () => { const n = +$('#pn').value; $('#sq').value = ALLOC[n] ? String(ALLOC[n]) : ''; };
+  $('#go').onclick = () => {
+    const n = +$('#pn').value, q = $('#sq').value;
+    if (!(n>=1 && n<=48) || !q) return $('#e').textContent = 'Enter a participant number between 1 and 48 and a sequence.';
+    S.participant_id = 'P' + String(n).padStart(2,'0'); S.sequence_id = +q; S.sequence = M.sequences[q];
+    S.researcher = $('#rs').value.trim().toUpperCase(); S.session_start = new Date().toISOString();
+    save(); consent();
+  };
+}
+
+/* ---------- 1 consent ---------- */
+function consent(){
+  show(`<h1>Consent to participate</h1><div class="card">
+  <p><b>Study:</b> Effects of AI-generated hints and time pressure on accuracy and perceived workload (INDE 421 course project, American University of Beirut).</p>
+  <p><b>What you will do:</b> answer four short sets of six arithmetic word problems, each with a time limit, and rate your workload after each set. In some sets you can open a short AI-generated hint for each question. The session takes about 45 minutes.</p>
+  <p><b>Risks:</b> minimal. Some sets are deliberately time-pressured, which can feel stressful. You get a two-minute break between sets and you may stop at any time without penalty or explanation.</p>
+  <p><b>Privacy:</b> your answers are stored under a code number, not your name. You do not type anything into an AI tool. You may ask for your data to be withdrawn until the dataset is de-identified at the end of data collection.</p>
+  <p><b>Your performance has no effect on any course grade.</b> Scores are shown to you only at the end.</p>
+  <p><label style="font-weight:400"><input type="checkbox" id="c1"> I am 18 or older, I can read English, and I am not a member of the research team.</label>
+     <label style="font-weight:400"><input type="checkbox" id="c2"> I have read the information above and I agree to take part.</label></p>
+  <div class="err" id="e"></div><button id="go">I agree – continue</button> <button class="sec" id="no">I do not wish to take part</button></div>`);
+  $('#go').onclick = () => { if(!$('#c1').checked||!$('#c2').checked) return $('#e').textContent='Please tick both boxes to continue.';
+    S.consent = true; S.consent_time = new Date().toISOString(); save(); background(); };
+  $('#no').onclick = () => { S.consent=false; S.finished=true; show('<h1>Thank you</h1><div class="card">No data were recorded. Please tell the researcher.</div>'); };
+}
+
+/* ---------- 2 background ---------- */
+function background(){
+  const sel = (id,opts) => `<select id="${id}"><option value="">– select –</option>${opts.map(o=>`<option>${o}</option>`).join('')}</select>`;
+  show(`<h1>About you</h1><div class="card">
+  <label for="age">Age (years)</label><input id="age" type="number" min="18" max="80" style="width:110px">
+  <label for="gen">Gender</label>${sel('gen',['Woman','Man','Other / prefer not to say'])}
+  <label for="fac">Faculty</label>${sel('fac',['Engineering and Architecture (MSFEA)','Arts and Sciences (FAS)','Business (OSB)','Health Sciences / Medicine / Nursing','Agricultural and Food Sciences (FAFS)','Other'])}
+  <label for="yr">Year of study</label>${sel('yr',['1st year','2nd year','3rd year','4th year or above','Graduate'])}
+  <label for="ai">How often do you use AI chatbots (ChatGPT, Claude, Gemini…) for coursework?</label>${sel('ai',['Daily','Several times a week','About once a week','Rarely or never'])}
+  <div class="err" id="e"></div><button id="go">Continue</button></div>`);
+  $('#go').onclick = () => {
+    const age=+$('#age').value, v=['gen','fac','yr','ai'].map(i=>$('#'+i).value);
+    if(!(age>=18&&age<=80)||v.some(x=>!x)) return $('#e').textContent='Please answer every question (age must be 18 or older).';
+    S.background={age,gender:v[0],faculty:v[1],year:v[2],ai_use:v[3]}; save(); instructions();
+  };
+}
+
+/* ---------- 3 instructions + practice ---------- */
+function instructions(){
+  show(`<h1>How it works</h1><div class="card"><ul>
+  <li>You will complete <b>4 sets</b> of <b>6 word problems</b>. Type a number as your answer; units are optional.</li>
+  <li>Each set has a <b>time limit</b> shown at the top. When it reaches 0:00 the set closes automatically.</li>
+  <li>In some sets an <b>AI hint</b> button appears under each question. Using it is optional.</li>
+  <li>Use only the on-screen calculator. No phones, notes or other websites.</li>
+  <li>You can answer the questions in any order and change answers until you submit.</li>
+  <li>After each set you rate your workload on six scales, then rest for two minutes.</li></ul>
+  <p>First, one <b>practice question</b> (not scored, no time limit) so you can try the answer box, the hint button and the calculator.</p>
+  <button id="go">Start practice</button></div>`);
+  $('#go').onclick = practice;
+}
+function practice(){
+  const p = M.practice;
+  show(`<h1>Practice question <small>(not scored)</small></h1><div class="work"><div>${qHtml(p,0,true)}
+   <div class="err" id="e"></div><button id="go">Check and continue</button></div>${calcHtml()}</div>`);
+  wireQ(null); wireCalc();
+  $('#go').onclick = () => {
+    const x = parseAns($('#a0').value);
+    if (x===null) return $('#e').textContent='Type a number in the answer box to continue.';
+    const ok = Math.abs(x-p.answer)<=0.0051;
+    show(`<h1>Practice ${ok?'correct':'answer'}</h1><div class="card"><p>${ok?'That is correct.':'The correct answer was <b>$'+p.answer.toFixed(2)+'</b>.'}
+    In the real sets you will <b>not</b> see whether answers are correct until the end of the session.</p><button id="go">I am ready</button></div>`);
+    $('#go').onclick = () => preTrial(0);
+  };
+}
+
+/* ---------- question + calculator widgets ---------- */
+function qHtml(p,i,ai){
+  return `<div class="q" data-i="${i}"><span class="n">Question ${i+1}.</span> ${esc(p.text)}
+   <div class="ans"><label for="a${i}" style="margin:0">Answer:</label><input id="a${i}" type="text" inputmode="decimal" autocomplete="off" data-ans="${i}">
+   <span class="mute">${esc(p.unit)}</span>${ai?`<span class="grow"></span><button class="sec" data-hint="${i}">Show AI hint</button>`:''}</div>
+   ${ai?`<div class="hint" id="h${i}" hidden><b>AI hint:</b> ${esc(p.hint)}</div>`:''}</div>`;
+}
+function wireQ(T){
+  document.querySelectorAll('[data-hint]').forEach(b => b.onclick = () => {
+    const i=+b.dataset.hint; $('#h'+i).hidden=false; b.disabled=true; b.textContent='Hint shown';
+    if(T && !T.items[i].hint_requested){ T.items[i].hint_requested=1; T.items[i].hint_time_s=+((performance.now()-T._t0)/1000).toFixed(1); }
+  });
+  document.querySelectorAll('[data-ans]').forEach(inp => {
+    inp.onkeydown = e => { if(e.key==='Enter') e.preventDefault(); };
+    inp.oninput = () => { if(T){ const i=+inp.dataset.ans; T.items[i].response=inp.value; T.items[i].last_edit_s=+((performance.now()-T._t0)/1000).toFixed(1); progress(T); } };
+  });
+}
+function calcHtml(){
+  const keys=['7','8','9','÷','4','5','6','×','1','2','3','−','0','.','=','+'];
+  return `<aside class="calc" aria-label="Calculator"><b>Calculator</b><output id="cd">0</output><div class="k">
+   <button data-k="C" class="op" style="grid-column:span 2">C</button><button data-k="⌫" class="op" style="grid-column:span 2">⌫</button>
+   ${keys.map(k=>`<button data-k="${k}" class="${'÷×−+'.includes(k)?'op':k==='='?'eq':''}">${k}</button>`).join('')}</div></aside>`;
+}
+function wireCalc(){
+  let cur='0', acc=null, op=null, fresh=true;
+  const d=$('#cd'), out=()=>{ d.textContent = cur; };
+  const apply=(a,b,o)=> o==='+'?a+b:o==='−'?a-b:o==='×'?a*b:b===0?NaN:a/b;
+  const tidy=x=> Number.isFinite(x) ? String(+x.toPrecision(12)) : 'Error';
+  document.querySelectorAll('[data-k]').forEach(b => b.onclick = () => {
+    const k=b.dataset.k;
+    if(cur==='Error' && k!=='C'){ return; }
+    if(k==='C'){ cur='0'; acc=null; op=null; fresh=true; }
+    else if(k==='⌫'){ if(!fresh){ cur=cur.length>1?cur.slice(0,-1):'0'; } }
+    else if('0123456789.'.includes(k)){
+      if(fresh){ cur = k==='.'?'0.':k; fresh=false; }
+      else if(k==='.'){ if(!cur.includes('.')) cur+='.'; }
+      else if(cur.length<14){ cur = cur==='0'?k:cur+k; }
+    } else if(k==='='){ if(op!==null){ cur=tidy(apply(acc,parseFloat(cur),op)); acc=null; op=null; fresh=true; } }
+    else { if(op!==null && !fresh){ cur=tidy(apply(acc,parseFloat(cur),op)); } acc=parseFloat(cur); op=k; fresh=true; }
+    out();
+  });
+}
+
+/* ---------- 4 trials ---------- */
+function preTrial(k){
+  const c = S.sequence[k], cond = M.conditions[c], lim = LIM[cond.time];
+  show(`<h1>Set ${k+1} of 4</h1><div class="card">
+   <table><tr><th>Time limit</th><td><b>${fmt(lim)}</b> for six questions</td></tr>
+   <tr><th>AI hints</th><td><b>${cond.ai?'Available':'Not available'}</b> in this set</td></tr></table>
+   <p>The timer starts when you press the button. The set closes automatically at 0:00.</p>
+   <button id="go">Start set ${k+1}</button></div>`);
+  $('#go').onclick = () => runTrial(k);
+}
+function progress(T){ const n=T.items.filter(it=>parseAns(it.response)!==null).length; $('#prog').textContent=`Answered ${n} / 6`; }
+function runTrial(k){
+  const c=S.sequence[k], cond=M.conditions[c], lim=LIM[cond.time], set=k+1;
+  const probs=M.problems.filter(p=>p.set===set).sort((a,b)=>a.item-b.item);
+  const T={period:k+1,set,condition:c,ai:cond.ai,time_limit:cond.time,limit_s:lim,start:new Date().toISOString(),
+    items:probs.map(p=>({id:p.id,item:p.item,category:p.category,response:'',hint_requested:0,hint_time_s:null,last_edit_s:null})), _t0:performance.now()};
+  app.innerHTML=`<div class="work"><div>${probs.map((p,i)=>qHtml(p,i,!!cond.ai)).join('')}</div>${calcHtml()}</div>`;
+  bar.style.display='block'; window.scrollTo(0,0);
+  $('#tname').textContent=`Set ${k+1} of 4`; const ac=$('#aichip');
+  ac.textContent=cond.ai?'AI hints: available':'AI hints: not available'; ac.className='chip'+(cond.ai?' on':'');
+  wireQ(T); wireCalc(); progress(T);
+  const tm=$('#timer'); let done=false;
+  const finish=(timeout)=>{ if(done) return; done=true; clearInterval(tick);
+    const el=(performance.now()-T._t0)/1000; T.elapsed_s=+Math.min(el,lim).toFixed(1); T.timeout=timeout?1:0; delete T._t0;
+    T.items.forEach((it,i)=>{ const x=parseAns(it.response); it.answered=x===null?0:1; it.parsed=x; it.correct=(x!==null && Math.abs(x-probs[i].answer)<=0.0051)?1:0; });
+    T.score=T.items.reduce((s,it)=>s+it.correct,0); T.hints_requested=T.items.reduce((s,it)=>s+it.hint_requested,0);
+    T.hint_ids=T.items.filter(it=>it.hint_requested).map(it=>it.id).join(';');
+    S.trials.push(T); save(); tlx(k, timeout); };
+  const upd=()=>{ const left=Math.ceil(lim-(performance.now()-T._t0)/1000);
+    tm.textContent=fmt(left); tm.className=left<=30?'bad':left<=60?'warn':''; if(left<=0) finish(true); };
+  upd(); tick=setInterval(upd,250);
+  $('#submitBtn').onclick=()=>{ const n=T.items.filter(it=>parseAns(it.response)!==null).length;
+    const msg = n<6 ? `You have answered ${n} of 6 questions. Submit anyway? You cannot return to this set.` : 'Submit your answers? You cannot return to this set.';
+    if(confirm(msg)) finish(false); };
+}
+
+/* ---------- NASA-TLX (Raw) ---------- */
+function tlx(k, timeout){
+  show(`<h1>Workload rating – set ${k+1}</h1>
+  ${timeout?'<div class="card" style="border-color:#e0b25c;background:#fff8e8"><b>Time is up.</b> Your answers were saved automatically.</div>':''}
+  <div class="card"><p>Rate the set you just finished. Move <b>every</b> slider, even if you leave it near the middle. There are no right or wrong ratings.</p>
+  ${TLX.map(([id,n,q,lo,hi])=>`<div class="tlx todo" id="w_${id}"><label for="t_${id}">${n} <span class="val" id="v_${id}">– not rated –</span></label>
+   <div class="mute">${q}</div><input type="range" id="t_${id}" min="0" max="100" step="5" value="50">
+   <div class="ends"><span>${lo}</span><span>${hi}</span></div></div>`).join('')}
+  <div class="err" id="e"></div><button id="go">Save ratings</button></div>`);
+  const touched={};
+  TLX.forEach(([id])=>{ const r=$('#t_'+id), mark=()=>{ touched[id]=1; $('#v_'+id).textContent=r.value+' / 100'; $('#w_'+id).classList.remove('todo'); };
+    r.oninput=mark; r.onpointerdown=mark; r.onkeydown=mark; });
+  $('#go').onclick=()=>{ const miss=TLX.filter(([id])=>!touched[id]).map(x=>x[1]);
+    if(miss.length) return $('#e').textContent='Please rate: '+miss.join(', ')+'.';
+    const T=S.trials[k]; T.tlx={}; TLX.forEach(([id])=>T.tlx[id]=+$('#t_'+id).value);
+    T.rtlx=+(TLX.reduce((s,[id])=>s+T.tlx[id],0)/6).toFixed(2); save();
+    k<3 ? rest(k) : finishSession(); };
+}
+
+/* ---------- rest ---------- */
+function rest(k){
+  show(`<h1>Break</h1><div class="card"><p>Rest for two minutes. Set ${k+2} of 4 follows.</p><div class="big" id="rt"></div>
+   <button id="go" disabled>Continue</button></div>`);
+  const t0=performance.now(); const u=()=>{ const left=Math.ceil(REST-(performance.now()-t0)/1000); $('#rt').textContent=fmt(left);
+    if(left<=0){ clearInterval(tick); $('#rt').textContent='0:00'; $('#go').disabled=false; } };
+  u(); tick=setInterval(u,250); $('#go').onclick=()=>preTrial(k+1);
+}
+
+/* ---------- end + export ---------- */
+function download(){
+  const blob=new Blob([JSON.stringify(S,null,1)],{type:'application/json'}), a=document.createElement('a');
+  a.href=URL.createObjectURL(blob); a.download=S.participant_id+'_session.json'; document.body.appendChild(a); a.click(); a.remove();
+}
+function finishSession(){
+  S.session_end=new Date().toISOString(); S.finished=true; save();
+  if (CFG.online) return finishOnline();
+  download();
+  show(`<h1>Finished – thank you!</h1><div class="card"><p>Your results:</p><table><tr><th>Set</th><th>AI hints</th><th>Time limit</th><th>Score</th></tr>
+   ${S.trials.map(t=>`<tr><td>${t.period}</td><td>${t.ai?'Yes':'No'}</td><td>${t.time_limit}</td><td>${t.score} / 6</td></tr>`).join('')}</table>
+   <p>Please call the researcher. Do not discuss the questions with other students until data collection ends.</p></div>
+   <div class="card"><b>Researcher:</b> the file <code>${S.participant_id}_session.json</code> was downloaded. Copy it to <code>data/sessions/</code>.
+   <p><button class="sec" id="dl">Download again</button> <button class="sec" id="nw">New participant</button></p></div>`);
+  $('#dl').onclick=download; $('#nw').onclick=()=>location.reload();
+}
+function finishOnline(){
+  show(`<h1>Finished – thank you!</h1><div class="card"><p>Your results:</p><table><tr><th>Set</th><th>AI hints</th><th>Time limit</th><th>Score</th></tr>
+   ${S.trials.map(t=>`<tr><td>${t.period}</td><td>${t.ai?'Yes':'No'}</td><td>${t.time_limit}</td><td>${t.score} / 6</td></tr>`).join('')}</table>
+   <p>Please do not discuss the questions with other students until data collection ends.</p></div>
+   <div class="card"><p id="st"><b>Saving your answers…</b> Please keep this page open.</p>
+   <p><button class="sec" id="rt" hidden>Try sending again</button> <button class="sec" id="dl" hidden>Download my answers as a file</button></p></div>`);
+  const st=$('#st'), go=()=>{ st.innerHTML='<b>Saving your answers…</b> Please keep this page open.';
+    sendData({kind:'session', ...S}).then(()=>{ S.sent=true; save(); st.innerHTML='<b>Your answers were sent.</b> Your code is <b>'+S.participant_id+'</b>. You can close this page.'; $('#rt').hidden=true; })
+      .catch(()=>{ st.innerHTML='<b>Your answers could not be sent.</b> Check your connection and try again, or download the file and send it to the research team.'; $('#rt').hidden=false; $('#dl').hidden=false; }); };
+  $('#rt').onclick=go; $('#dl').onclick=download; go();
+}
+CFG.online ? onlineStart() : setup();
+</script>
+</body>
+</html>
