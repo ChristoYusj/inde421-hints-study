@@ -134,7 +134,7 @@ function consent(){
   <div class="err" id="e"></div><button id="go">I agree – continue</button> <button class="sec" id="no">I do not wish to take part</button></div>`);
   $('#go').onclick = () => { if(!$('#c1').checked||!$('#c2').checked) return $('#e').textContent='Please tick both boxes to continue.';
     S.consent = true; S.consent_time = new Date().toISOString(); save(); background(); };
-  $('#no').onclick = () => { S.consent=false; S.finished=true; show('<h1>Thank you</h1><div class="card">No data were recorded. Please tell the researcher.</div>'); };
+  $('#no').onclick = () => { S.consent=false; S.finished=true; show('<h1>Thank you</h1><div class="card">No data were recorded. ' + (CFG.online ? 'You can close this page.' : 'Please tell the researcher.') + '</div>'); };
 }
 
 /* ---------- 2 background ---------- */
@@ -310,7 +310,9 @@ function finishOnline(){
    ${S.trials.map(t=>`<tr><td>${t.period}</td><td>${t.ai?'Yes':'No'}</td><td>${t.time_limit}</td><td>${t.score} / 6</td></tr>`).join('')}</table>
    <p>Please do not discuss the questions with other students until data collection ends.</p></div>
    <div class="card"><p id="st"><b>Saving your answers…</b> Please keep this page open.</p>
-   <p><button class="sec" id="rt" hidden>Try sending again</button> <button class="sec" id="dl" hidden>Download my answers as a file</button></p></div>`);
+   <p><button class="sec" id="rt" hidden>Try sending again</button> <button class="sec" id="dl" hidden>Download my answers as a file</button></p></div>
+   <div class="card"><b>One more thing (2 minutes, optional):</b> a short anonymous survey about AI and workload.
+   <p><a href="survey.html" target="_blank" rel="noopener">Open the survey</a></p></div>`);
   const st=$('#st'), go=()=>{ st.innerHTML='<b>Saving your answers…</b> Please keep this page open.';
     sendData({kind:'session', ...S}).then(()=>{ S.sent=true; save(); st.innerHTML='<b>Your answers were sent.</b> Your code is <b>'+S.participant_id+'</b>. You can close this page.'; $('#rt').hidden=true; })
       .catch(()=>{ st.innerHTML='<b>Your answers could not be sent.</b> Check your connection and try again, or download the file and send it to the research team.'; $('#rt').hidden=false; $('#dl').hidden=false; }); };
